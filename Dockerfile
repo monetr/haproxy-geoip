@@ -1,9 +1,9 @@
-FROM golang:1.27 AS build
+FROM --platform=$BUILDPLATFORM golang:1.27 AS build
 WORKDIR /build
 COPY . ./
 RUN go build -o /geoip2map .
 
-FROM debian:13 AS data
+FROM --platform=$BUILDPLATFORM debian:13 AS data
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates curl gzip && \
     rm -rf /var/lib/apt/lists/*
