@@ -25,6 +25,28 @@ spec:
 
 Updating the GeoIP data is as simple as periodically bumping the image reference.
 
+### Renovate
+
+Renovate's built in Kubernetes manager only picks up `image:` lines, so it won't see the `reference:` on an image
+volume. A custom regex manager can handle it instead. The versioning below only matches the `YYYY-MM` tags, so the
+`latest` and `YYYY-MM-shortsha` tags are ignored.
+
+```json
+{
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/\\.ya?ml$/"],
+      "matchStrings": [
+        "reference:\\s*(?<depName>ghcr\\.io/monetr/haproxy-geoip):(?<currentValue>\\d{4}-\\d{2})"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^(?<major>\\d{4})-(?<minor>\\d{2})$"
+    }
+  ]
+}
+```
+
 You can then configure HAProxy with a frontend snippet like this, which will load the country and the ASN for the client
 IP address.
 
